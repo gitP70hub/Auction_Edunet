@@ -8,30 +8,21 @@ import AuctionItem from "./pages/AuctionItem.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import PostAuction from "./pages/PostAuction.jsx";
 
-//import { useEffect, useState } from "react";
-//import axios from "axios";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
-  // const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
 
-  // useEffect(() => {
-  //   axios.post("http://localhost:3001/Signup", {
-  //     username: "testuser",
-  //     password: "testpassword"
-  //   })
-  //   .then((res) => {
-  //     if (res.data && res.data.message) {
-  //       setMessage(res.data.message);
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     console.error("Error fetching data:", err.response?.data?.message || err.message);
-  //     setMessage(err.response?.data?.message || "An error occurred");
-  //   });
-  // }, []);
+  useEffect(() => {
+    axios.get("http://localhost:3001/signup")
+       .then((res) => setMessage(res.data))
+       .catch((err) => console.error("Error fetching data:", err));
+  }, []);
 
   return (
     <>
+    <div>{message}</div>
     <Routes>
       <Route path="/" element={<AuctionListing />} />
       <Route path="/signup" element={<SignUp />} />

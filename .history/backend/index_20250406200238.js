@@ -12,8 +12,11 @@ const SECRET_KEY = "my_super_secret_123!";
 
 // Connect to MongoDB
 mongoose.connect(
-  "mongodb+srv://edunet:edunet1234@cluster12.i0qxr0h.mongodb.net/",
-
+  "mongodb+srv://edunet:edunet1234@cluster01.jmty8yz.mongodb.net/",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
 );
 
 // User Schema
@@ -212,8 +215,8 @@ app.post("/bid/:id", authenticate, async (req, res) => {
 });
 
 // Start the server
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
+app.listen(5000, () => {
+  console.log("Server is running on port 5000");
 });
 
 

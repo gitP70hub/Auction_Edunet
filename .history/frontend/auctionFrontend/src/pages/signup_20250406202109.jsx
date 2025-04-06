@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const SignUp = () => {
+const signup = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -19,7 +19,7 @@ const SignUp = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:3001/signup", {
+            const response = await fetch("http://localhost:5001/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,7 +122,7 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default signup;
 
 
 

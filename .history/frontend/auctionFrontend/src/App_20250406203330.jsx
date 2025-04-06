@@ -32,6 +32,7 @@ function App() {
 
   return (
     <>
+    <div>{message}</div>
     <Routes>
       <Route path="/" element={<AuctionListing />} />
       <Route path="/signup" element={<SignUp />} />

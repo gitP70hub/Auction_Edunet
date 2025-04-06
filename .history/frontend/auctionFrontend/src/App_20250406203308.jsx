@@ -8,7 +8,7 @@ import AuctionItem from "./pages/AuctionItem.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import PostAuction from "./pages/PostAuction.jsx";
 
-//import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 //import axios from "axios";
 
 function App() {
@@ -32,6 +32,7 @@ function App() {
 
   return (
     <>
+    <div>{message}</div>
     <Routes>
       <Route path="/" element={<AuctionListing />} />
       <Route path="/signup" element={<SignUp />} />
