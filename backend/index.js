@@ -25,14 +25,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 // Auction Item Schema
-const auctionItemSchema = new mongoose.Schema({
-  itemName: String,
-  description: String,
-  currentBid: Number,
-  highestBidder: String,
-  closingTime: Date,
-  isClosed: { type: Boolean, default: false },
-});
+const AuctionItem = require('./Models/AuctionItem');
 
 const AuctionItem = mongoose.model("AuctionItem", auctionItemSchema);
 
@@ -97,9 +90,9 @@ app.post("/Signin", async (req, res) => {
 // Create Auction Item (Protected)
 app.post("/auction", authenticate, async (req, res) => {
   try {
-    const { itemName, description, startingBid, closingTime } = req.body;
+    const { itemName, description, startingBid, closingTime, category, image } = req.body;
 
-    if (!itemName || !description || !startingBid || !closingTime) {
+    if (!itemName || !description || !startingBid || !closingTime || !category) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -107,8 +100,12 @@ app.post("/auction", authenticate, async (req, res) => {
       itemName,
       description,
       currentBid: startingBid,
+      startingBid,
       highestBidder: "",
+      seller: req.user.userId,
       closingTime,
+      category,
+      image: image || "https://via.placeholder.com/150"
     });
 
     await newItem.save();
@@ -119,10 +116,23 @@ app.post("/auction", authenticate, async (req, res) => {
   }
 });
 
-// Get all auction items
+// Get all auction items with search functionality
 app.get("/auctions", async (req, res) => {
   try {
-    const auctions = await AuctionItem.find();
+    const { search, category } = req.query;
+    let query = {};
+    
+    if (search) {
+      query.itemName = { $regex: search, $options: 'i' };
+    }
+    if (category) {
+      query.category = category;
+    }
+    
+    const auctions = await AuctionItem.find(query)
+      .populate('seller', 'username')
+      .sort({ createdAt: -1 });
+      
     res.json(auctions);
   } catch (error) {
     console.error("Fetching Auctions Error:", error);
