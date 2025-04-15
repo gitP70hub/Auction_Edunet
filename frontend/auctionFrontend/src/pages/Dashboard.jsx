@@ -11,13 +11,13 @@ const Dashboard = () => {
     const fetchUserData = async () => {
       try {
         // Fetch user's active auctions
-        const auctionsResponse = await axios.get("http://localhost:3001/user/auctions", {
+        const auctionsResponse = await axios.get("http://localhost:3001/api/auctions/user", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
         setActiveAuctions(auctionsResponse.data);
 
         // Fetch user's bidding history
-        const bidsResponse = await axios.get("http://localhost:3001/user/bids", {
+        const bidsResponse = await axios.get("http://localhost:3001/api/auctions/user/bids", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
         setBiddingHistory(bidsResponse.data);

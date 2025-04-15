@@ -11,7 +11,7 @@ const AuctionItem = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/getauctiondata/${id}`);
+        const response = await axios.get(`http://localhost:3001/api/auctions/${id}`);
         setItem(response.data);
       } catch (error) {
         console.error("Error fetching auction item:", error);
@@ -24,8 +24,10 @@ const AuctionItem = () => {
   const handleBidSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:3001/placebid/${id}`, {
+      const response = await axios.post(`http://localhost:3001/api/auctions/${id}/bid`, {
         amount: parseFloat(bidAmount)
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       if (response.data.success) {
         setItem(prev => ({ ...prev, currentBid: parseFloat(bidAmount) }));
