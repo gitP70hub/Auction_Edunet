@@ -35,11 +35,6 @@ mongoose.connect(
   console.error("MongoDB connection error:", err);
 });
 
-// Root endpoint for server status check
-app.head("/", (req, res) => {
-  res.sendStatus(200);
-});
-
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/signup", signupRoutes);
