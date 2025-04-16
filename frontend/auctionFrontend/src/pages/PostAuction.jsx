@@ -5,10 +5,10 @@ import axios from "axios";
 const PostAuction = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    itemName: "",
     description: "",
     startingBid: "",
-    endDate: "",
+    closingTime: "",
     category: "",
     image: ""
   });
@@ -25,15 +25,60 @@ const PostAuction = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/addauctiondata", formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      // Validate required fields
+      if (!formData.itemName || !formData.description || !formData.startingBid || !formData.closingTime || !formData.category) {
+        setError("Please provide all required fields");
+        return;
+      }
+
+      // Get the user ID from the JWT token
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Please log in to create an auction");
+        navigate("/login");
+        return;
+      }
+
+      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+      
+      const auctionData = {
+        itemName: formData.itemName.trim(),
+        description: formData.description.trim(),
+        startingBid: parseFloat(formData.startingBid),
+        closingTime: new Date(formData.closingTime).toISOString(),
+        category: formData.category,
+        seller: tokenPayload.id,
+        image: formData.image.trim() || undefined // Only include if provided
+      };
+
+      // Validate numeric values
+      if (isNaN(auctionData.startingBid) || auctionData.startingBid <= 0) {
+        setError("Starting bid must be a positive number");
+        return;
+      }
+
+      // Validate closing time
+      const closingDate = new Date(formData.closingTime);
+      if (closingDate <= new Date()) {
+        setError("Closing time must be in the future");
+        return;
+      }
+
+      console.log('Sending auction data:', auctionData); // Debug log
+
+      const response = await axios.post("http://localhost:3001/api/auctions", auctionData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
+      
       if (response.data) {
-        navigate(`/auction/${response.data._id}`);
+        navigate('/dashboard');
       }
     } catch (error) {
-      setError("Failed to create auction listing");
-      console.error("Error creating auction:", error);
+      setError(error.response?.data?.error || "Failed to create auction listing");
+      console.error("Error creating auction:", error.response?.data || error);
     }
   };
 
@@ -55,8 +100,8 @@ const PostAuction = () => {
             </label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="itemName"
+              value={formData.itemName}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white/50 backdrop-blur-sm"
               required
@@ -99,8 +144,8 @@ const PostAuction = () => {
             </label>
             <input
               type="datetime-local"
-              name="endDate"
-              value={formData.endDate}
+              name="closingTime"
+              value={formData.closingTime}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white/50 backdrop-blur-sm"
               required
